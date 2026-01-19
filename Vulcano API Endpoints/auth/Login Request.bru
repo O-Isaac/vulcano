@@ -1,0 +1,27 @@
+meta {
+  name: Login Request
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "zaragozamendozaisaac@gmail.com",
+    "password": "12345678"
+  }
+}
+
+script:post-response {
+  bru.setVar("access_token", res.body.access_token);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
