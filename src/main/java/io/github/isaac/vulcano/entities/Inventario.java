@@ -20,7 +20,7 @@ public class Inventario {
     @MapsId("jugadorId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "jugador_id", nullable = false)
-    private Jugadore jugador;
+    private Jugador jugador;
 
     @Column(name = "cantidad")
     private Integer cantidad;

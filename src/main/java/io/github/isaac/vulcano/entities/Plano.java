@@ -14,6 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Plano {
     @Id
     @Column(name = "plano_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ColumnDefault("0")

@@ -16,6 +16,7 @@ import java.time.Instant;
 public class Queue {
     @Id
     @Column(name = "queue_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ColumnDefault("current_timestamp()")
@@ -31,7 +32,7 @@ public class Queue {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "jugador_id")
-    private Jugadore jugador;
+    private Jugador jugador;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
