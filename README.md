@@ -1,5 +1,12 @@
 # Proyecto Vulcano F
 
+![Java](https://img.shields.io/badge/Java-17%2B-orange?style=flat-square&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green?style=flat-square&logo=spring-boot)
+![Maven](https://img.shields.io/badge/Maven-3.x-C71A36?style=flat-square&logo=apache-maven)
+![JWT](https://img.shields.io/badge/JWT-Auth-blue?style=flat-square&logo=jwt)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square)
+
 Proyecto Vulcano F es un servicio REST construido con Spring Boot que recrea el sistema de fundición del popular juego free-to-play Warframe. Proporciona APIs CRUD básicas para entidades relacionadas con la fundición: jugadores, recursos, objetos, planos, componentes, colas e inventarios.
 
 ## Descripción
@@ -13,6 +20,26 @@ Este repositorio contiene la base de un backend en Java (Spring Boot) que modela
 - Maven (se incluye `mvnw` para ejecutar sin depender de una instalación global de Maven)
 - Jakarta Persistence (JPA)
 - Lombok (para getters/setters)
+- Spring Security OAuth2 con JWT
+
+## Seguridad y Autenticación
+
+Este proyecto implementa **autenticación y autorización basada en JWT (JSON Web Tokens)**:
+
+- **Algoritmo de firma**: HS256
+- **Encriptación de contraseñas**: BCrypt
+- **Control de acceso**: STATELESS (sin sesiones)
+- **Autorización**: Basada en roles con Spring Security
+
+### Endpoints Públicos
+- `/auth/login` - Iniciar sesión
+- `/auth/register` - Registrar nuevo usuario
+
+### Endpoints Protegidos
+Todos los demás endpoints requieren un token JWT válido en el header:
+```
+Authorization: Bearer <token_jwt>
+```
 
 ## Ejecutar localmente
 
