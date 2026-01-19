@@ -24,7 +24,7 @@ public abstract class JugadorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "nivel", constant = "1")
-    @Mapping(target = "role", constant = "ROLE_USER")
+    @Mapping(target = "role", constant = "USER")
     public abstract Jugador toEntity(RegisterRequest request);
 
     @Named("encodePassword")

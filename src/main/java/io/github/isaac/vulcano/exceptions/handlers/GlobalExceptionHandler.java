@@ -5,6 +5,7 @@ import io.github.isaac.vulcano.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -85,6 +86,18 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "error", "Cuerpo de la petición inválido",
                         "mensaje", "El JSON enviado está mal formado o el cuerpo de la petición está vacío"
+                ));
+    }
+
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAuthorizationDenied(
+            AuthorizationDeniedException ex) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of(
+                        "error", "Acceso denegado",
+                        "mensaje", "No tienes permisos para acceder a este recurso"
                 ));
     }
 

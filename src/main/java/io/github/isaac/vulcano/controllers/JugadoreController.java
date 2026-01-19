@@ -2,6 +2,8 @@ package io.github.isaac.vulcano.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 public class JugadoreController {
 
     @GetMapping
-    public ResponseEntity<String> listar() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> listar(Authentication auth) {
         return ResponseEntity.ok("Listar todos los jugadores");
     }
 
