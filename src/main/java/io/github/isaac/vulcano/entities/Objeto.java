@@ -24,4 +24,14 @@ public class Objeto {
     @JoinColumn(name = "plano_id")
     private Plano plano;
 
+    // Metodos auxliares de bidirecionalidad
+    public void addPlano(Plano plano) {
+        this.plano = plano;
+        plano.setObjeto(this);
+    }
+
+    public void removePlano(Plano plano) {
+        this.plano = null;
+        plano.setObjeto(null);
+    }
 }

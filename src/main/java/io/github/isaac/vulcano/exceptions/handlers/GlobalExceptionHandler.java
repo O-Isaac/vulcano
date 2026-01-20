@@ -2,6 +2,7 @@ package io.github.isaac.vulcano.exceptions.handlers;
 
 import io.github.isaac.vulcano.exceptions.BadRequestException;
 import io.github.isaac.vulcano.exceptions.UserAlreadyExistsException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -101,5 +102,44 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String message = ex.getMostSpecificCause().getMessage();
+        Map<String, String> errors = new HashMap<>();
 
+        // 1. Caso: Dato demasiado largo (el de tu log)
+        if (message.contains("Data too long for column")) {
+            // Extraemos el nombre de la columna si es posible, o usamos un mensaje genérico
+            String column = extractColumnName(message);
+            errors.put(column, "El contenido es demasiado largo para este campo");
+        }
+        // 2. Caso: Duplicados (Unique constraints)
+        else if (message.contains("Duplicate entry")) {
+            errors.put("error", "Ya existe un registro con estos datos");
+        }
+        // 3. Caso general de integridad
+        else {
+            errors.put("database", "Error de integridad de datos");
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", "Validación de base de datos fallida",
+                        "detalles", errors
+                ));
+    }
+
+    /**
+     * Método auxiliar para limpiar el nombre de la columna del mensaje de error
+     */
+    private String extractColumnName(String message) {
+        try {
+            // El mensaje suele ser: Data too long for column 'desc' at row 1
+            int start = message.indexOf("'") + 1;
+            int end = message.indexOf("'", start);
+            return message.substring(start, end);
+        } catch (Exception e) {
+            return "campo";
+        }
+    }
 }
