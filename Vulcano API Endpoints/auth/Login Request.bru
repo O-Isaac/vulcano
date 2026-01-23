@@ -17,8 +17,9 @@ body:json {
   }
 }
 
-script:post-responseObjeto {
-  bru.setVar("access_token", res.body.access_token);
+script:post-response {
+  bru.setEnvVar("access_token", res.body.access_token)
+  bru.setEnvVar("refresh_token", res.body.refresh_token)
 }
 
 settings {

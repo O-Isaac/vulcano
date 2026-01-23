@@ -1,0 +1,26 @@
+meta {
+  name: Refresh Request
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh_token": "2e49a57c-e989-4084-92ae-395ab64b64be"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("access_token", res.body.acess_token)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
