@@ -1,0 +1,25 @@
+meta {
+  name: Crear plano
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/planos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Plano de excalibur prime",
+    "tiempoConstrucion": 86400000,
+    "coste": 100000,
+    "desc": "Plano para construir aquel que se suponia que estaba extinto"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Actualizar plano
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/api/planos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Plano de excalibur umbra"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

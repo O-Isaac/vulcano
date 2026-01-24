@@ -12,12 +12,12 @@ post {
 
 body:json {
   {
-    "refresh_token": "2e49a57c-e989-4084-92ae-395ab64b64be"
+    "refresh_token": "{{refresh_token}}"
   }
 }
 
 script:post-response {
-  bru.setEnvVar("access_token", res.body.acess_token)
+  bru.setEnvVar("access_token", res.body.access_token)
 }
 
 settings {
