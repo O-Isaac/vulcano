@@ -1,36 +1,59 @@
 package io.github.isaac.vulcano.controllers;
 
+import io.github.isaac.vulcano.dtos.recursos.RecursoCreateRequest;
+import io.github.isaac.vulcano.dtos.recursos.RecursoResponse;
+import io.github.isaac.vulcano.dtos.recursos.RecursoUpdateRequest;
+import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
+import io.github.isaac.vulcano.services.RecursoServices;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/recursos")
+@RequiredArgsConstructor
 public class RecursoController {
 
+    private final RecursoServices recursoServices;
+
     @GetMapping
-    public ResponseEntity<String> listar() {
-        return ResponseEntity.ok("Listar todos los recursos");
+    public ResponseListEntity<RecursoResponse> listar() {
+        return ResponseListEntity.ok(
+            recursoServices.listarRecurso()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok("Obtener recurso por id: " + id);
+    public ResponseEntity<RecursoResponse> obtenerPorId(@PathVariable Integer id) {
+        return recursoServices.listarRecursoById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<String> crear() {
-        return ResponseEntity.status(HttpStatus.CREATED).body("Crear nuevo recurso");
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RecursoResponse> crear(@RequestBody RecursoCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                recursoServices.crearRecurso(request)
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Actualizar recurso con id: " + id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RecursoResponse> actualizar(@Valid @RequestBody RecursoUpdateRequest request, @PathVariable Integer id) {
+        return ResponseEntity.ok(
+                recursoServices.editarRecurso(request, id)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Eliminar recurso con id: " + id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        recursoServices.eliminarRecurso(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
