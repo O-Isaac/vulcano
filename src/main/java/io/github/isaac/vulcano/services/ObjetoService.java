@@ -9,6 +9,7 @@ import io.github.isaac.vulcano.repositories.ObjetoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class ObjetoService {
 
     // U
 
+    @Transactional
     public Objeto updateObjeto(Integer id, UpdateRequest request) {
         if (id == null) {
             throw new BadRequestException("Es obligatorio una id");

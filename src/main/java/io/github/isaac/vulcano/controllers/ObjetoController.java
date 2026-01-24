@@ -1,22 +1,16 @@
 package io.github.isaac.vulcano.controllers;
 
-import io.github.isaac.vulcano.dtos.auth.LoginRequest;
 import io.github.isaac.vulcano.dtos.objeto.CreateRequest;
 import io.github.isaac.vulcano.dtos.objeto.ResponseObjeto;
 import io.github.isaac.vulcano.dtos.objeto.UpdateRequest;
-import io.github.isaac.vulcano.entities.Objeto;
-import io.github.isaac.vulcano.entities.response.ResponseListEntity;
+import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
 import io.github.isaac.vulcano.mappers.ObjetoMapper;
 import io.github.isaac.vulcano.services.ObjetoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

@@ -4,7 +4,7 @@ import io.github.isaac.vulcano.dtos.objeto.CreateRequest;
 import io.github.isaac.vulcano.dtos.objeto.ResponseObjeto;
 import io.github.isaac.vulcano.dtos.objeto.UpdateRequest;
 import io.github.isaac.vulcano.entities.Objeto;
-import io.github.isaac.vulcano.entities.response.ResponseListEntity;
+import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
 import org.mapstruct.*;
 import org.springframework.http.ResponseEntity;
 
