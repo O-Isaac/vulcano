@@ -7,6 +7,7 @@ import io.github.isaac.vulcano.entities.Jugador;
 import io.github.isaac.vulcano.repositories.JugadoreRepository;
 import io.github.isaac.vulcano.services.QueueService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,18 +28,23 @@ public class QueueController {
     private final QueueService queueService;
 
     @GetMapping
-    public ResponseListEntity<QueueResponse> listar() {
-        return ResponseListEntity.ok(List.of());
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseListEntity<QueueResponse> listar(
+            @RequestParam(required = false, defaultValue = "EN_CONSTRUCION") String estado
+    ) {
+        return ResponseListEntity.ok(
+                queueService.obtenerTodasConstruciones(estado)
+        );
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok("Obtener queue por id: " + id);
+    public ResponseListEntity<QueueResponse> obtenerPorId(@PathVariable Integer id) {
+        return ResponseListEntity.ok(queueService.obtenerTodasConstrucionesJugador(id));
     }
 
     @PostMapping
-    public ResponseEntity<QueueResponse> crear(@AuthenticationPrincipal Jwt jwt, @RequestBody QueueCreateRequest request) {
+    public ResponseEntity<QueueResponse> crear(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody QueueCreateRequest request) {
        return ResponseEntity.ok(
                queueService.iniciarConstruccion(jwt, request.planoId())
        );
@@ -48,12 +54,6 @@ public class QueueController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> actualizar(@PathVariable Integer id) {
         return ResponseEntity.ok("Actualizar queue con id: " + id);
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> eliminar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Eliminar queue con id: " + id);
     }
 }
 

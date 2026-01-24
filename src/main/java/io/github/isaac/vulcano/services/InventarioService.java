@@ -11,6 +11,7 @@ import io.github.isaac.vulcano.repositories.JugadoreRepository;
 import io.github.isaac.vulcano.repositories.RecursoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InventarioService {
@@ -74,6 +76,7 @@ public class InventarioService {
                 .orElseGet(() -> {
                     Inventario nuevo = new Inventario();
                     nuevo.setId(id);
+                    log.info("Creando Inventario al jugador {}", jugadorId);
                     // Usamos referencias para no cargar las entidades completas de la BD
                     nuevo.setJugador(jugadoreRepository.getReferenceById(jugadorId));
                     nuevo.setRecurso(recursoRepository.getReferenceById(recursoId));
