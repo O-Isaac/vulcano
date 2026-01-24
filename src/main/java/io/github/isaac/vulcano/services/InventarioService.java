@@ -1,17 +1,17 @@
 package io.github.isaac.vulcano.services;
 
-import io.github.isaac.vulcano.dtos.inventario.InventarioCreateRequest;
 import io.github.isaac.vulcano.dtos.inventario.InventarioResponse;
+import io.github.isaac.vulcano.dtos.inventario.InventarioResponsePrivado;
 import io.github.isaac.vulcano.entities.Inventario;
 import io.github.isaac.vulcano.entities.InventarioId;
 import io.github.isaac.vulcano.entities.Jugador;
-import io.github.isaac.vulcano.entities.Recurso;
 import io.github.isaac.vulcano.mappers.InventarioMapper;
 import io.github.isaac.vulcano.repositories.InventarioRepository;
 import io.github.isaac.vulcano.repositories.JugadoreRepository;
 import io.github.isaac.vulcano.repositories.RecursoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,20 +34,39 @@ public class InventarioService {
                 .toList();
     }
 
-    @Transactional
-    public InventarioResponse entregarRecurso(InventarioCreateRequest request) {
-        Inventario inventario = obtenerOInicializar(request.jugadorId(), request.recursoId());
+    @Transactional(readOnly = true)
+    public List<InventarioResponsePrivado> listarPrivado(Jwt jwt) {
+        Jugador jugador = jugadoreRepository.findByCorreo(jwt.getSubject())
+                .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"));
 
-        // Simplemente actualizamos la cantidad
-        inventario.setCantidad(inventario.getCantidad() + request.cantidad());
+        return inventarioRepository.findByJugadorId(jugador.getId())
+                .stream()
+                .map(inventarioMapper::toResponsePublic)
+                .toList();
+    }
+
+    @Transactional
+    public InventarioResponse crearInventario(Integer jugadorId, Integer recursoId) {
+        Inventario inventario = obtenerOInicializar(jugadorId, recursoId);
+
+        inventario.setCantidad(0);
 
         return inventarioMapper.toResponse(inventarioRepository.save(inventario));
     }
 
-    /**
-     * Método privado para encapsular la lógica de búsqueda o creación.
-     * Mantiene el método principal enfocado en la lógica de negocio.
-     */
+    @Transactional
+    public InventarioResponsePrivado crearInventarioPrivado(Jwt jwt, Integer recursoId) {
+        Jugador jugador = jugadoreRepository.findByCorreo(jwt.getSubject())
+                .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"));
+
+        Inventario inventario = obtenerOInicializar(jugador.getId(), recursoId);
+        inventario.setCantidad(0);
+
+        return inventarioMapper.toResponsePublic(
+                inventarioRepository.save(inventario)
+        );
+    }
+
     private Inventario obtenerOInicializar(Integer jugadorId, Integer recursoId) {
         InventarioId id = new InventarioId(recursoId, jugadorId);
 
@@ -59,12 +78,30 @@ public class InventarioService {
                     nuevo.setJugador(jugadoreRepository.getReferenceById(jugadorId));
                     nuevo.setRecurso(recursoRepository.getReferenceById(recursoId));
                     nuevo.setCantidad(0);
+
                     return nuevo;
                 });
+    }
+
+    @Transactional
+    public InventarioResponse actualizarCantidad(Integer jugadorId, Integer recursoId, Integer nuevaCantidad) {
+        InventarioId id = new InventarioId(recursoId, jugadorId);
+
+        Inventario inventario = inventarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró el inventario para actualizar"));
+
+        inventario.setCantidad(nuevaCantidad);
+
+        return inventarioMapper.toResponse(inventarioRepository.save(inventario));
     }
 
     public Optional<InventarioResponse> buscarPorId(Integer jugadorId, Integer recursoId) {
         return inventarioRepository.findById(new InventarioId(recursoId, jugadorId))
                 .map(inventarioMapper::toResponse);
+    }
+
+    public void eliminar(Integer jugadorId, Integer recursoId) {
+        InventarioId id = new InventarioId(recursoId, jugadorId);
+        inventarioRepository.deleteById(id);
     }
 }

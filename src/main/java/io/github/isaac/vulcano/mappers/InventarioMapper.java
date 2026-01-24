@@ -1,7 +1,7 @@
 package io.github.isaac.vulcano.mappers;
 
-import io.github.isaac.vulcano.dtos.inventario.InventarioCreateRequest;
 import io.github.isaac.vulcano.dtos.inventario.InventarioResponse;
+import io.github.isaac.vulcano.dtos.inventario.InventarioResponsePrivado;
 import io.github.isaac.vulcano.entities.Inventario;
 import org.mapstruct.*;
 
@@ -9,12 +9,6 @@ import org.mapstruct.*;
 public interface InventarioMapper {
     // Response
     InventarioResponse toResponse(Inventario inventario);
+    InventarioResponsePrivado toResponsePublic(Inventario inventario);
 
-    @Mapping(source = "jugadorId", target = "id.jugadorId")
-    @Mapping(source = "recursoId", target = "id.recursoId")
-    Inventario toEntity(InventarioCreateRequest inventarioCreateRequest);
-
-    @InheritConfiguration(name = "toEntity")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void partialUpdate(InventarioCreateRequest inventarioCreateRequest, @MappingTarget Inventario inventario);
 }
