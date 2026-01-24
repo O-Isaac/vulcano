@@ -3,6 +3,9 @@ package io.github.isaac.vulcano.controllers;
 import io.github.isaac.vulcano.dtos.auth.LoginRequest;
 import io.github.isaac.vulcano.dtos.auth.RegisterRequest;
 import io.github.isaac.vulcano.entities.Jugador;
+import io.github.isaac.vulcano.entities.RefreshToken;
+import io.github.isaac.vulcano.exceptions.TokenException;
+import io.github.isaac.vulcano.repositories.RefreshTokenRepository;
 import io.github.isaac.vulcano.services.JugadorService;
 import io.github.isaac.vulcano.services.TokenService;
 import jakarta.validation.Valid;
@@ -25,6 +28,7 @@ public class AuthController {
     private final JugadorService jugadorService;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     /**
      * Registro de nuevo jugador.
@@ -56,11 +60,28 @@ public class AuthController {
         );
 
         // 2. Si llegamos aquí, las credenciales son correctas. Generamos el token.
-        String token = tokenService.generateToken(authentication);
+        String accessToken = tokenService.generateToken(authentication);
 
+        // 3. Genereamos el refresh token
+        Jugador jugador = (Jugador) authentication.getPrincipal();
+        String refreshToken = tokenService.createRefreshToken(jugador);
+
+        // Devolvemos
         return ResponseEntity.ok(Map.of(
-                "access_token", token,
+                "access_token", accessToken,
+                "refresh_token", refreshToken,
                 "token_type", "Bearer"
         ));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        String requestRefreshToken = request.get("refresh_token");
+
+        return refreshTokenRepository.findByToken(requestRefreshToken)
+                .map(tokenService::verifyExpiration)
+                .map(RefreshToken::getJugador)
+                .map(jugador -> tokenService.reauthenticate(jugador, requestRefreshToken))
+                .orElseThrow(() -> new TokenException("Refresh Token no encontrado en el sistema"));
     }
 }

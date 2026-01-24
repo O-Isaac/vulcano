@@ -1,4 +1,4 @@
-package io.github.isaac.vulcano.entities.response;
+package io.github.isaac.vulcano.dtos.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
