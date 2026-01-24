@@ -1,6 +1,5 @@
 package io.github.isaac.vulcano.services;
 
-import io.github.isaac.vulcano.dtos.queue.QueueCreateRequest;
 import io.github.isaac.vulcano.dtos.queue.QueueResponse;
 import io.github.isaac.vulcano.entities.*;
 import io.github.isaac.vulcano.exceptions.BadRequestException;
@@ -11,9 +10,7 @@ import io.github.isaac.vulcano.repositories.PlanoRepository;
 import io.github.isaac.vulcano.repositories.QueueRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QueueService {
 
     private final JugadoreRepository jugadoreRepository;
@@ -72,5 +70,41 @@ public class QueueService {
 
         // 4. Hacemos commit de todos los cambios en la transaccion
         return queueMapper.toResponse(queueRepository.save(nuevaCola));
+    }
+
+
+    @Transactional
+    public void finalizarTareasCompletadas() {
+        // 1. Buscar lo que ya terminó
+        List<Queue> terminados = queueRepository.findByEstadoAndFinalTimeBefore("EN_CONSTRUCCION", Instant.now());
+
+        for (Queue cola : terminados) {
+            // 2. Cambiar estado
+            cola.setEstado("FINALIZADO");
+
+            // 3. Entregar el producto al inventario
+            entregarRecurso(cola.getJugador(), cola.getPlano().getRecursoFabricado());
+        }
+
+        // Nota: No hace falta queueRepository.save(cola) por el @Transactional (Dirty Checking)
+    }
+
+    private void entregarRecurso(Jugador jugador, Recurso recurso) {
+        InventarioId id = new InventarioId(recurso.getId(), jugador.getId());
+
+        Inventario inventario = inventarioRepository.findById(id)
+                .orElseGet(() -> {
+                    Inventario nuevo = new Inventario();
+                    nuevo.setId(id);
+                    nuevo.setJugador(jugador);
+                    nuevo.setRecurso(recurso);
+                    nuevo.setCantidad(0);
+                    return nuevo;
+                });
+
+        inventario.setCantidad(inventario.getCantidad() + 1);
+        inventarioRepository.save(inventario);
+
+        log.info("Recurso {} entregado al jugador {}", jugador.getNombre(), recurso.getNombre());
     }
 }
