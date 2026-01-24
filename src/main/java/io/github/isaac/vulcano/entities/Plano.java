@@ -7,6 +7,9 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -30,9 +33,23 @@ public class Plano {
     @Column(name = "tiempo_construcion")
     private Long tiempoConstrucion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY,  cascade = CascadeType.REMOVE)
     @JoinColumn(name = "objeto_id")
     private Objeto objeto;
+
+    @OneToMany(mappedBy = "plano", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private List<Componente> componentes = new ArrayList<>();
+
+    // Metodos que asegurar la bidireccionalidad
+
+    public void addComponente(Componente componente) {
+        componentes.add(componente);
+        componente.setPlano(this);
+    }
+
+    public void removeComponente(Componente componente) {
+        componentes.remove(componente);
+        componente.setPlano(null); // Limpia la relación
+    }
 
 }

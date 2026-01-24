@@ -1,36 +1,55 @@
 package io.github.isaac.vulcano.controllers;
 
+import io.github.isaac.vulcano.dtos.plano.PlanoCreateRequest;
+import io.github.isaac.vulcano.dtos.plano.PlanoResponse;
+import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
+import io.github.isaac.vulcano.services.PlanoService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/planos")
+@RequiredArgsConstructor
 public class PlanoController {
 
+    private final PlanoService planoService;
+
     @GetMapping
-    public ResponseEntity<String> listar() {
-        return ResponseEntity.ok("Listar todos los planos");
+    public ResponseListEntity<PlanoResponse> listar() {
+        return ResponseListEntity.ok(planoService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok("Obtener plano por id: " + id);
+    public ResponseEntity<PlanoResponse> obtenerPorId(@PathVariable Integer id) {
+        return planoService.obtenerPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<String> crear() {
-        return ResponseEntity.status(HttpStatus.CREATED).body("Crear nuevo plano");
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlanoResponse> crear(@RequestBody @Valid PlanoCreateRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(planoService.crear(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Actualizar plano con id: " + id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlanoResponse> actualizar(@PathVariable Integer id, @RequestBody PlanoCreateRequest request) {
+        return ResponseEntity.ok(planoService.actualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> eliminar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Eliminar plano con id: " + id);
+        planoService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
+
 }
 
