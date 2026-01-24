@@ -5,15 +5,18 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/api/planos/1/componentes
+  url: http://localhost:8080/api/planos/5/componentes/bulk
   body: json
   auth: inherit
 }
 
 body:json {
-  {
-    "recursoId": ""
-  }
+  [
+    { "recursoId": 1, "cantidad": 1 },
+    { "recursoId": 2, "cantidad": 1 },
+    { "recursoId": 3, "cantidad": 1 },
+    { "recursoId": 14, "cantidad": 1 }
+  ]
 }
 
 settings {

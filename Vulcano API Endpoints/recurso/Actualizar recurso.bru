@@ -5,13 +5,16 @@ meta {
 }
 
 put {
-  url: http://localhost:8080/api/recursos/1
+  url: http://localhost:8080/api/recursos/4
   body: json
   auth: inherit
 }
 
 body:json {
-  {}
+  {
+    "nombre": "Excalibur Prime",
+    "desc": "El poderoso guerrero creido extinto ha regresado"
+  }
 }
 
 settings {
