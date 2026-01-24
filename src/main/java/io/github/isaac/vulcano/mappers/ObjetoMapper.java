@@ -14,17 +14,18 @@ import java.util.List;
 public interface ObjetoMapper {
     // Para convertir en entidades
     Objeto toEntity(CreateRequest createRequest);
+
     Objeto toEntity(ResponseObjeto responseObjeto);
 
     // Para convertir en dtos
     ResponseObjeto toDto(Objeto objeto);
 
     // Para convertir en respuestas automaticamente
-    default ResponseEntity<ResponseObjeto> toResponse (Objeto objeto) {
+    default ResponseEntity<ResponseObjeto> toResponse(Objeto objeto) {
         return ResponseEntity.ok(toDto(objeto));
     }
 
-    default ResponseListEntity<ResponseObjeto> toResponseList(List<Objeto> objetos){
+    default ResponseListEntity<ResponseObjeto> toResponseList(List<Objeto> objetos) {
         return ResponseListEntity.ok(objetos.stream().map(this::toDto).toList());
     }
 
@@ -33,4 +34,6 @@ public interface ObjetoMapper {
     Objeto partialUpdate(UpdateRequest request, @MappingTarget Objeto objeto);
 
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Objeto partialUpdate(ResponseObjeto responseObjeto, @MappingTarget Objeto objeto);
 }
