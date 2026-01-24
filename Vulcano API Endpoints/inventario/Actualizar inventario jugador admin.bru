@@ -1,0 +1,20 @@
+meta {
+  name: Actualizar inventario jugador admin
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/api/inventarios/1/1?cantidad=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  cantidad: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

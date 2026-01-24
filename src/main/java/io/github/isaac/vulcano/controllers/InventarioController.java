@@ -21,7 +21,7 @@ public class InventarioController {
 
     private final InventarioService inventarioService;
 
-    @GetMapping
+      @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<InventarioResponse>> listar() {
         return ResponseEntity.ok(inventarioService.listar());

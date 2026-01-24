@@ -1,0 +1,16 @@
+meta {
+  name: Crear mi propio inventario
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/api/inventarios/me/3
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
