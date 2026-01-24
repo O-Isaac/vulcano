@@ -1,8 +1,8 @@
 package io.github.isaac.vulcano.controllers;
 
-import io.github.isaac.vulcano.dtos.recursos.RecursoCreateRequest;
-import io.github.isaac.vulcano.dtos.recursos.RecursoResponse;
-import io.github.isaac.vulcano.dtos.recursos.RecursoUpdateRequest;
+import io.github.isaac.vulcano.dtos.recurso.RecursoCreateRequest;
+import io.github.isaac.vulcano.dtos.recurso.RecursoResponse;
+import io.github.isaac.vulcano.dtos.recurso.RecursoUpdateRequest;
 import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
 import io.github.isaac.vulcano.services.RecursoServices;
 import jakarta.validation.Valid;

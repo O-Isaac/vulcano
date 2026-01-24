@@ -1,4 +1,4 @@
-package io.github.isaac.vulcano.dtos.recursos;
+package io.github.isaac.vulcano.dtos.recurso;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
