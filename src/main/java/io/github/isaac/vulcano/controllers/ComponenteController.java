@@ -1,36 +1,55 @@
 package io.github.isaac.vulcano.controllers;
 
+import io.github.isaac.vulcano.dtos.componente.ComponenteCreateRequest;
+import io.github.isaac.vulcano.dtos.componente.ComponenteResponse;
+import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
+import io.github.isaac.vulcano.services.ComponenteService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/componentes")
+@RequiredArgsConstructor
 public class ComponenteController {
 
+    private final ComponenteService componenteService;
+
     @GetMapping
-    public ResponseEntity<String> listar() {
-        return ResponseEntity.ok("Listar todos los componentes");
+    public ResponseListEntity<ComponenteResponse> listar() {
+        return ResponseListEntity.ok(
+                componenteService.listar()
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok("Obtener componente por id: " + id);
+    public ResponseEntity<ComponenteResponse> obtenerPorId(@PathVariable Integer id) {
+        return componenteService.obtenerPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<String> crear() {
-        return ResponseEntity.status(HttpStatus.CREATED).body("Crear nuevo componente");
+    public ResponseEntity<ComponenteResponse> crear(@Valid @RequestBody ComponenteCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                componenteService.crear(request)
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Actualizar componente con id: " + id);
+    public ResponseEntity<ComponenteResponse> actualizar(@PathVariable Integer id, @RequestBody ComponenteCreateRequest request) {
+        return ResponseEntity.ok(
+                componenteService.actualizar(id, request)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable Integer id) {
-        return ResponseEntity.ok("Eliminar componente con id: " + id);
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        componenteService.eliminar(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
 

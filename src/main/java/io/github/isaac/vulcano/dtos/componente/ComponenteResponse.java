@@ -8,6 +8,6 @@ import java.io.Serializable;
 /**
  * DTO for {@link io.github.isaac.vulcano.entities.Componente}
  */
-public record ComponenteResponse(Integer id, Integer cantidad, PlanoResponse plano,
+public record ComponenteResponse(Integer id, Integer cantidad,
                                  RecursoResponse recurso) implements Serializable {
 }

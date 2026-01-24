@@ -3,6 +3,7 @@ package io.github.isaac.vulcano.exceptions.handlers;
 import io.github.isaac.vulcano.exceptions.BadRequestException;
 import io.github.isaac.vulcano.exceptions.TokenException;
 import io.github.isaac.vulcano.exceptions.UserAlreadyExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,7 +140,14 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "error", "Entidad no encontrado",
+                        "mensaje", ex.getMessage() != null ? ex.getMessage() : "El identificador proporcionado no existe"
+                ));
+    }
 
     /**
      * Método auxiliar para limpiar el nombre de la columna del mensaje de error
