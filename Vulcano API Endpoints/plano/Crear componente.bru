@@ -1,0 +1,22 @@
+meta {
+  name: Crear componente
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/api/planos/1/componentes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "recursoId": ""
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

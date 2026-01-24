@@ -2,6 +2,7 @@ package io.github.isaac.vulcano.dtos.plano;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.io.Serializable;
@@ -24,6 +25,10 @@ public record PlanoCreateRequest(
 
         @NotNull(message = "El tiempo de construcción es obligatorio")
         @PositiveOrZero(message = "El tiempo de construcción no puede ser negativo")
-        Long tiempoConstrucion
+        Long tiempoConstrucion,
+
+        @NotNull(message = "El recursoFabricadoId es obligatorio")
+        @Positive(message = "El recursoFabricadoId debe ser mayor a cero")
+        Integer recursoFabricadoId
 ) implements Serializable {
 }

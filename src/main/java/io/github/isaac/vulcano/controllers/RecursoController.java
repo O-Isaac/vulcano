@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/recursos")
 @RequiredArgsConstructor
@@ -39,6 +41,12 @@ public class RecursoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 recursoServices.crearRecurso(request)
         );
+    }
+
+    @PostMapping("/bulk")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseListEntity<RecursoResponse> crear(@RequestBody List<RecursoCreateRequest> request) {
+        return ResponseListEntity.created(recursoServices.crearRecursoBulk(request));
     }
 
     @PutMapping("/{id}")

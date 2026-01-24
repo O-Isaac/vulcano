@@ -33,9 +33,10 @@ public class Plano {
     @Column(name = "tiempo_construcion")
     private Long tiempoConstrucion;
 
-    @ManyToOne(fetch = FetchType.LAZY,  cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "objeto_id")
-    private Objeto objeto;
+    // One to one en una sola direccion por que no necesito saber el recurso en que plano pertence, si no
+    // tendriamos muchos nulos
+    @OneToOne(cascade = CascadeType.ALL)
+    private Recurso recursoFabricado;
 
     @OneToMany(mappedBy = "plano", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Componente> componentes = new ArrayList<>();

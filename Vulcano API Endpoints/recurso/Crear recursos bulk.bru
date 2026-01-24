@@ -1,0 +1,71 @@
+meta {
+  name: Crear recursos bulk
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:8080/api/recursos/bulk
+  body: json
+  auth: inherit
+}
+
+body:json {
+  [
+    {
+      "nombre": "Créditos",
+      "desc": "La moneda principal utilizada por el Sistema de Origen.",
+      "rareza": "COMÚN"
+    },
+    {
+      "nombre": "Rubedo",
+      "desc": "Un mineral cristalino de color rojo altamente reflectante.",
+      "rareza": "COMÚN"
+    },
+    {
+      "nombre": "Morfics",
+      "desc": "Un metal amorfo que puede cambiar de forma bajo estímulo eléctrico.",
+      "rareza": "POCO COMÚN"
+    },
+    {
+      "nombre": "Placas de Aleación",
+      "desc": "Placas de metal utilizadas habitualmente en el blindaje de naves.",
+      "rareza": "COMÚN"
+    },
+    {
+      "nombre": "Módulos de Control",
+      "desc": "Componente electrónico complejo utilizado en la tecnología robótica.",
+      "rareza": "POCO COMÚN"
+    },
+    {
+      "nombre": "Paquete de Polímero",
+      "desc": "Un polímero nanocompuesto utilizado en la fabricación de plásticos avanzados.",
+      "rareza": "COMÚN"
+    },
+    {
+      "nombre": "Plástidos",
+      "desc": "Materia biológica utilizada en la nanotecnología y medicina.",
+      "rareza": "POCO COMÚN"
+    },
+    {
+      "nombre": "Muestra de Mutágeno",
+      "desc": "Una muestra de tejido orgánico alterado por el virus de la Infestación.",
+      "rareza": "RARO"
+    },
+    {
+      "nombre": "Sensores Neuronales",
+      "desc": "Tecnología de sensores avanzada extraída de las máquinas de los Grineer.",
+      "rareza": "RARO"
+    },
+    {
+      "nombre": "Célula Orokin",
+      "desc": "Una fuente de energía antigua y extremadamente rara de la era Orokin.",
+      "rareza": "RARO"
+    }
+  ]
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

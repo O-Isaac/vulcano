@@ -15,4 +15,8 @@ public class ResponseListEntity<T> extends ResponseEntity<List<T>> {
     public static <T> ResponseListEntity<T> ok(List<T> list) {
         return new ResponseListEntity<>(list, HttpStatus.OK);
     }
+
+    public static <T> ResponseListEntity<T> created(List<T> list) {
+        return new ResponseListEntity<>(list, HttpStatus.CREATED);
+    }
 }

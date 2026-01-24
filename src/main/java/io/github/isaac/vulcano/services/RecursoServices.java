@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,16 @@ public class RecursoServices {
         Recurso recursoDatabase = recursoRepository.save(recurso);
 
         return recursoMapper.toResponse(recursoDatabase);
+    }
+
+    public List<RecursoResponse> crearRecursoBulk(List<RecursoCreateRequest> request) {
+        List<Recurso> recursos = request.stream().map(recursoMapper::toEntity).toList();
+        List<Recurso> recursosBd = recursoRepository.saveAll(recursos);
+
+        return recursos
+                .stream()
+                .map(recursoMapper::toResponse)
+                .toList();
     }
 
     // R
