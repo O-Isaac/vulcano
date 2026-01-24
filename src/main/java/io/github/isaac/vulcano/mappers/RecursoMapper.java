@@ -17,4 +17,9 @@ public interface RecursoMapper {
     // Update request
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void partialUpdate(RecursoUpdateRequest recursoUpdateRequest, @MappingTarget Recurso recurso);
+
+    Recurso toEntity(RecursoResponse recursoResponse);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Recurso partialUpdate(RecursoResponse recursoResponse, @MappingTarget Recurso recurso);
 }
