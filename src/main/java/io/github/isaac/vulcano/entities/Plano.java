@@ -42,7 +42,6 @@ public class Plano {
     private List<Componente> componentes = new ArrayList<>();
 
     // Metodos que asegurar la bidireccionalidad
-
     public void addComponente(Componente componente) {
         componentes.add(componente);
         componente.setPlano(this);
