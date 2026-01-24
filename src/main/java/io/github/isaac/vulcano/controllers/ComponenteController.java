@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,11 +23,13 @@ public class ComponenteController {
     // --- RUTAS JERÁRQUICAS (Basadas en el Plano) ---
 
     @GetMapping("/planos/{planoId}/componentes")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseListEntity<ComponenteResponse> listarPorPlano(@PathVariable Integer planoId) {
         return ResponseListEntity.ok(componenteService.listarPorPlano(planoId));
     }
 
     @PostMapping("/planos/{planoId}/componentes")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ComponenteResponse> agregarAlPlano(
             @PathVariable Integer planoId,
             @Valid @RequestBody ComponenteCreateRequest request) {
@@ -35,6 +38,7 @@ public class ComponenteController {
     }
 
     @PostMapping("/planos/{planoId}/componentes/bulk")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseListEntity<ComponenteResponse> agregarAlPlanoBulk(@PathVariable Integer planoId,
         @Valid @RequestBody List<ComponenteCreateRequest> request) {
         return ResponseListEntity.created(componenteService.crearParaPlanoBulk(planoId, request));
@@ -57,6 +61,7 @@ public class ComponenteController {
     }
 
     @PutMapping("/componentes/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ComponenteResponse> actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody ComponenteCreateRequest request) {
@@ -64,6 +69,7 @@ public class ComponenteController {
     }
 
     @DeleteMapping("/componentes/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         componenteService.eliminar(id);
         return ResponseEntity.noContent().build();
