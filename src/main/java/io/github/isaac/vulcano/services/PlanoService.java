@@ -39,7 +39,7 @@ public class PlanoService {
         Plano plano = planoMapper.toEntity(request);
 
         Recurso recurso = recursoRepository.findById(request.recursoFabricadoId())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("recursoFabricadoId no encontrado"));
 
         plano.setRecursoFabricado(recurso);
 

@@ -1,7 +1,8 @@
 package io.github.isaac.vulcano.dtos.plano;
 
-import io.github.isaac.vulcano.entities.Componente;
-import io.github.isaac.vulcano.entities.Recurso;
+import io.github.isaac.vulcano.dtos.componente.ComponenteResponse;
+import io.github.isaac.vulcano.dtos.recurso.RecursoResponse;
+
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,6 +16,6 @@ public record PlanoResponse(
         String desc,
         String nombre,
         Long tiempoConstrucion,
-        Recurso recursoFabricado,
-        List<Componente> componentes
+        RecursoResponse recursoFabricado,
+        List<ComponenteResponse> componentes
 ) implements Serializable {}
