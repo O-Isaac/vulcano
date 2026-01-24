@@ -11,45 +11,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/componentes")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ComponenteController {
 
     private final ComponenteService componenteService;
 
-    @GetMapping
+    // --- RUTAS JERÁRQUICAS (Basadas en el Plano) ---
+
+    @GetMapping("/planos/{planoId}/componentes")
+    public ResponseListEntity<ComponenteResponse> listarPorPlano(@PathVariable Integer planoId) {
+        return ResponseListEntity.ok(componenteService.listarPorPlano(planoId));
+    }
+
+    @PostMapping("/planos/{planoId}/componentes")
+    public ResponseEntity<ComponenteResponse> agregarAlPlano(
+            @PathVariable Integer planoId,
+            @Valid @RequestBody ComponenteCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(componenteService.crearParaPlano(planoId, request));
+    }
+
+    // --- RUTAS INDIVIDUALES (Basadas en el ID del Componente) ---
+
+    @GetMapping("/componentes")
     public ResponseListEntity<ComponenteResponse> listar() {
         return ResponseListEntity.ok(
                 componenteService.listar()
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/componentes/{id}")
     public ResponseEntity<ComponenteResponse> obtenerPorId(@PathVariable Integer id) {
         return componenteService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<ComponenteResponse> crear(@Valid @RequestBody ComponenteCreateRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                componenteService.crear(request)
-        );
+    @PutMapping("/componentes/{id}")
+    public ResponseEntity<ComponenteResponse> actualizar(
+            @PathVariable Integer id,
+            @Valid @RequestBody ComponenteCreateRequest request) {
+        return ResponseEntity.ok(componenteService.actualizar(id, request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ComponenteResponse> actualizar(@PathVariable Integer id, @RequestBody ComponenteCreateRequest request) {
-        return ResponseEntity.ok(
-                componenteService.actualizar(id, request)
-        );
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/componentes/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         componenteService.eliminar(id);
-
         return ResponseEntity.noContent().build();
     }
 }
-

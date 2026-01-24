@@ -15,6 +15,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -146,6 +148,41 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "error", "Entidad no encontrado",
                         "mensaje", ex.getMessage() != null ? ex.getMessage() : "El identificador proporcionado no existe"
+                ));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNoResource(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                   "error", "Not found",
+                   "mensaje", ex.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        // Extraemos información útil de la excepción
+        String nombreParametro = ex.getName();
+
+        String tipoRequerido = (ex.getRequiredType() != null)
+                ? ex.getRequiredType().getSimpleName()
+                : "desconocido";
+
+        String valorEnviado = (ex.getValue() != null)
+                ? ex.getValue().toString()
+                : "null";
+
+        String mensajeDetallado = String.format(
+                "El parámetro '%s' debe ser de tipo '%s'. Valor recibido: '%s'",
+                nombreParametro, tipoRequerido, valorEnviado
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", "Tipo de argumento incorrecto",
+                        "mensaje", mensajeDetallado,
+                        "parametro", nombreParametro
                 ));
     }
 
