@@ -67,6 +67,28 @@ public class ComponenteService {
     }
 
     @Transactional
+    public List<ComponenteResponse> crearParaPlanoBulk(Integer planoId, List<ComponenteCreateRequest> componenteCreateRequests) {
+        Plano plano = planoRepository.findById(planoId)
+                .orElseThrow(() -> new EntityNotFoundException("Plano no encontrado"));
+
+        List<Componente> componentes = componenteCreateRequests.stream()
+                .map(request -> {
+                    Componente componente = componenteMapper.toEntity(request);
+                    componente.setRecurso(recursoRepository.getReferenceById(request.recursoId()));
+                    componente.setPlano(plano);
+                    return componente;
+                })
+                .toList();
+
+        List<Componente> persistidos = componenteRepository.saveAll(componentes);
+
+        return persistidos
+                .stream()
+                .map(componenteMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
     public ComponenteResponse actualizar(Integer id, ComponenteCreateRequest request) {
         Componente componente = componenteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Componente no encontrado"));
