@@ -1,0 +1,24 @@
+meta {
+  name: Crear Recurso
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/recursos
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Neurodos",
+    "rareza": "RARO",
+    "desc": "Neurodos sacados de cuerpos infectados"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
