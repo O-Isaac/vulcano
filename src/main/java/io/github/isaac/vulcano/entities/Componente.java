@@ -28,4 +28,36 @@ public class Componente {
     @JoinColumn(name = "recurso_id")
     private Recurso recurso;
 
+    public void setPlano(Plano plano) {
+        // Si ya tiene este plano, no hacemos nada para evitar bucles
+        if (this.plano == plano) return;
+
+        // Si ya pertenecía a otro plano, nos eliminamos de la lista del anterior
+        if (this.plano != null) {
+            this.plano.getComponentes().remove(this);
+        }
+
+        this.plano = plano;
+
+        // Si el nuevo plano no es nulo, nos añadimos a su lista
+        if (plano != null && !plano.getComponentes().contains(this)) {
+            plano.getComponentes().add(this);
+        }
+    }
+
+    public void setRecurso(Recurso recurso) {
+        if (this.recurso == recurso) return;
+
+        // Desvincular del recurso anterior si existía
+        if (this.recurso != null) {
+            this.recurso.getComponentes().remove(this);
+        }
+
+        this.recurso = recurso;
+
+        // Vincular al nuevo recurso
+        if (recurso != null && !recurso.getComponentes().contains(this)) {
+            recurso.getComponentes().add(this);
+        }
+    }
 }
