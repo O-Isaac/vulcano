@@ -1,18 +1,18 @@
 meta {
-  name: Actualizar plano
+  name: Actualizar componente
   type: http
-  seq: 4
+  seq: 3
 }
 
 put {
-  url: http://localhost:8080/api/planos/1
+  url: http://localhost:8080/api/componentes/1
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "nombre": "Plano de excalibur umbra"
+    "cantidad": 20
   }
 }
 
