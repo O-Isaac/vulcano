@@ -1,6 +1,7 @@
 package io.github.isaac.vulcano.exceptions.handlers;
 
 import io.github.isaac.vulcano.exceptions.BadRequestException;
+import io.github.isaac.vulcano.exceptions.TokenException;
 import io.github.isaac.vulcano.exceptions.UserAlreadyExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -128,6 +129,17 @@ public class GlobalExceptionHandler {
                         "detalles", errors
                 ));
     }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<Map<String, String>> handleTokenException(TokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of(
+                        "error", "Fallo en la validación del token",
+                        "mensaje", ex.getMessage()
+                ));
+    }
+
+
 
     /**
      * Método auxiliar para limpiar el nombre de la columna del mensaje de error
