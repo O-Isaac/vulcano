@@ -42,12 +42,16 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
+        // Obtenemos el jugador
+        Jugador jugador = (Jugador) authentication.getPrincipal();
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(expiry) // <--- CADUCIDAD
                 .subject(authentication.getName())
                 .claim("roles", scope)
+                .claim("nivel", jugador != null ? jugador.getNivel() : 0)
                 .build();
 
         // Especificar explícitamente el algoritmo HS256
