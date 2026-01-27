@@ -36,6 +36,8 @@ public class Plano {
     // One to one en una sola direccion por que no necesito saber el recurso en que plano pertence, si no
     // tendriamos muchos nulos
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "recurso_fabricado_recurso_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Recurso recursoFabricado;
 
     @OneToMany(mappedBy = "plano", cascade = CascadeType.ALL,  orphanRemoval = true)
