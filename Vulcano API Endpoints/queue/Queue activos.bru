@@ -1,0 +1,15 @@
+meta {
+  name: Queue activos
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8080/api/queues/active
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
