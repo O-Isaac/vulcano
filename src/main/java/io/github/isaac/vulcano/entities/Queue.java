@@ -35,6 +35,7 @@ public class Queue {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "plano_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Plano plano;
 
 }

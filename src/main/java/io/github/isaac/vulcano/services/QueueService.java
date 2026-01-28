@@ -148,4 +148,26 @@ public class QueueService {
                 .map(queueMapper::toResponse)
                 .toList();
     }
+
+    /**
+     * Recupera las construcciones activas usando la consulta optimizada.
+     * Realiza una limpieza previa de tareas terminadas para asegurar datos frescos.
+     */
+    @Transactional
+    public List<QueueResponse> obtenerActivos(Jwt userJwt) {
+        log.info("Obteniendo forgas activas de {}", userJwt.getSubject());
+
+        // 1. Identificar al jugador
+        Jugador jugador = jugadoreRepository.findByCorreo(userJwt.getSubject())
+                .orElseThrow(() -> new EntityNotFoundException("Jugador no encontrado"));
+
+        // 2. Limpieza automática: Finaliza lo que ya terminó antes de devolver la lista
+        finalizarTareasCompletadas();
+
+        // 3. Consulta optimizada con JOIN FETCH para evitar N+1
+        return queueRepository.findAllActivos(jugador.getId())
+                .stream()
+                .map(queueMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 }

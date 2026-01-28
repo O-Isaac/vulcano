@@ -26,7 +26,7 @@ public class Recurso {
     @Column(name = "rareza", length = 100)
     private String rareza;
 
-    @OneToMany(mappedBy = "recurso", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recurso", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Componente> componentes = new ArrayList<>();
 
     public void addComponente(Componente componente) {
