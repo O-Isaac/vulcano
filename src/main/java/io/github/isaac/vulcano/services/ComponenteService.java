@@ -6,6 +6,7 @@ import io.github.isaac.vulcano.dtos.plano.PlanoResponse;
 import io.github.isaac.vulcano.entities.Componente;
 import io.github.isaac.vulcano.entities.Plano;
 import io.github.isaac.vulcano.entities.Recurso;
+import io.github.isaac.vulcano.exceptions.BadRequestException;
 import io.github.isaac.vulcano.mappers.ComponenteMapper;
 import io.github.isaac.vulcano.mappers.PlanoMapper;
 import io.github.isaac.vulcano.repositories.ComponenteRepository;
@@ -13,12 +14,14 @@ import io.github.isaac.vulcano.repositories.PlanoRepository;
 import io.github.isaac.vulcano.repositories.RecursoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ComponenteService {
@@ -52,6 +55,12 @@ public class ComponenteService {
 
     @Transactional
     public ComponenteResponse crearParaPlano(Integer planoId, ComponenteCreateRequest request) {
+        boolean existe = componenteRepository.existsByPlanoIdAndRecursoId(planoId, request.recursoId());
+
+        if (existe) {
+            throw new BadRequestException("El ingrediente ya ha sido añadido al plano");
+        }
+
         Plano plano = planoRepository.findById(planoId)
                 .orElseThrow(() -> new EntityNotFoundException("Plano no encontrado"));
 
@@ -73,6 +82,12 @@ public class ComponenteService {
 
         List<Componente> componentes = componenteCreateRequests.stream()
                 .map(request -> {
+                    boolean existe = componenteRepository.existsByPlanoIdAndRecursoId(planoId, request.recursoId());
+
+                    if (existe) {
+                        throw new BadRequestException("El ingrediente ya existe en el plano");
+                    }
+
                     Componente componente = componenteMapper.toEntity(request);
                     componente.setRecurso(recursoRepository.getReferenceById(request.recursoId()));
                     componente.setPlano(plano);

@@ -55,7 +55,7 @@ public class QueueService {
             }
 
             itemInventario.setCantidad(itemInventario.getCantidad() - requisito.getCantidad());
-            // No es necesario llamar a save() aquí si estamos en una @Transactional (Dirty Checking)
+            // No es necesario llamar a save() aquí si estamos en una @Transactional
         }
     }
 

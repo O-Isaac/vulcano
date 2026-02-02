@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface ComponenteRepository extends JpaRepository<Componente, Integer> {
     List<Componente> findByPlanoId(Integer planoId);
+
+    boolean existsByPlanoIdAndRecursoId(Integer planoId, Integer recursoId);
 }
