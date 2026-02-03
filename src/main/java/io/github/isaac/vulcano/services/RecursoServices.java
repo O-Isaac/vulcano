@@ -9,6 +9,8 @@ import io.github.isaac.vulcano.mappers.RecursoMapper;
 import io.github.isaac.vulcano.repositories.RecursoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +36,7 @@ public class RecursoServices {
         List<Recurso> recursos = request.stream().map(recursoMapper::toEntity).toList();
         List<Recurso> recursosBd = recursoRepository.saveAll(recursos);
 
-        return recursos
+        return recursosBd
                 .stream()
                 .map(recursoMapper::toResponse)
                 .toList();
@@ -47,6 +49,11 @@ public class RecursoServices {
         return recursos.stream()
                 .map(recursoMapper::toResponse)
                 .toList();
+    }
+
+    public Page<RecursoResponse> listarRecursoPaginado(Pageable pageable) {
+        return recursoRepository.findAll(pageable)
+                .map(recursoMapper::toResponse);
     }
 
     public Optional<RecursoResponse> listarRecursoById(Integer id) {

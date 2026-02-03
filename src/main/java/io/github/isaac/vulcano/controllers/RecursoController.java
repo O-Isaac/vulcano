@@ -7,6 +7,9 @@ import io.github.isaac.vulcano.dtos.response.ResponseListEntity;
 import io.github.isaac.vulcano.services.RecursoServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +28,17 @@ public class RecursoController {
     public ResponseListEntity<RecursoResponse> listar() {
         return ResponseListEntity.ok(
             recursoServices.listarRecurso()
+        );
+    }
+
+    @GetMapping("/paginate")
+    public ResponseEntity<Page<RecursoResponse>> listarPaginado(
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(
+                recursoServices.listarRecursoPaginado(pageable)
         );
     }
 
