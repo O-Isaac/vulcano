@@ -1,0 +1,21 @@
+meta {
+  name: Listar recursos paginado
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://localhost:8080/api/recursos/paginate?page=1&size=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  size: 2
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
