@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PlanoService {
 
     private final PlanoRepository planoRepository;
@@ -66,6 +67,7 @@ public class PlanoService {
         );
     }
 
+    @Transactional
     public void eliminar(Integer id) {
         planoRepository.deleteById(id);
     }

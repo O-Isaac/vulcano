@@ -22,6 +22,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class InventarioService {
 
     private final InventarioRepository inventarioRepository;
@@ -103,6 +104,7 @@ public class InventarioService {
                 .map(inventarioMapper::toResponse);
     }
 
+    @Transactional
     public void eliminar(Integer jugadorId, Integer recursoId) {
         InventarioId id = new InventarioId(recursoId, jugadorId);
         inventarioRepository.deleteById(id);

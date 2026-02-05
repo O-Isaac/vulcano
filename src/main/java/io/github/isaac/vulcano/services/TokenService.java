@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TokenService {
 
     private final JwtEncoder encoder;
@@ -74,6 +75,7 @@ public class TokenService {
         return refreshTokenRepository.save(refreshToken).getToken();
     }
 
+    @Transactional
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);

@@ -24,6 +24,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ComponenteService {
 
     private final ComponenteRepository componenteRepository;
@@ -119,6 +120,7 @@ public class ComponenteService {
         return componenteMapper.toResponse(componenteRepository.save(componente));
     }
 
+    @Transactional
     public void eliminar(Integer id) {
         componenteRepository.deleteById(id);
     }

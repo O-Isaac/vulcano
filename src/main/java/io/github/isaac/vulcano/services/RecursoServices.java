@@ -16,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RecursoServices {
     private final RecursoRepository recursoRepository;
     private final RecursoMapper recursoMapper;
@@ -75,6 +75,7 @@ public class RecursoServices {
     }
 
     // D
+    @Transactional
     public void eliminarRecurso(Integer recursoId) {
         recursoRepository.deleteById(recursoId);
     }

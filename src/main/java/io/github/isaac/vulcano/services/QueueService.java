@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class QueueService {
 
     private final JugadoreRepository jugadoreRepository;
@@ -35,9 +36,21 @@ public class QueueService {
      */
     private void validarConstruccionEnProgreso(Jugador jugador, Plano plano) {
         boolean yaConstruyendo = queueRepository.existsByJugadorAndPlanoAndEstado(jugador, plano, "EN_CONSTRUCCION");
+
         if (yaConstruyendo) {
             throw new BadRequestException("Ya tienes un " + plano.getNombre() + " en la fundición.");
         }
+    }
+
+    private void cobrarPlano(Jugador jugador, Plano plano) {
+        long coste = plano.getCoste();
+        long creditosDisponibles = jugador.getCreditos();
+
+        if (creditosDisponibles < coste) {
+            throw new BadRequestException("Créditos insuficientes para fabricar el objeto del plano.");
+        }
+
+        jugador.setCreditos(creditosDisponibles - coste);
     }
 
     /**
@@ -90,7 +103,10 @@ public class QueueService {
         // 2. Validaciones de negocio
         validarConstruccionEnProgreso(jugador, plano);
 
-        // 3. Consumo de recursos (Lógica extraída para mayor claridad)
+        // 3.1 Validar y cobrar la fabricacion
+        cobrarPlano(jugador, plano);
+
+        // 3.2 Consumo de recursos (Lógica extraída para mayor claridad)
         descontarRecursosDelInventario(jugador, plano);
 
         // 4. Creación de la entrada en la cola
