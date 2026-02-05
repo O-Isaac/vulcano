@@ -8,6 +8,11 @@ import io.github.isaac.vulcano.exceptions.TokenException;
 import io.github.isaac.vulcano.repositories.RefreshTokenRepository;
 import io.github.isaac.vulcano.services.JugadorService;
 import io.github.isaac.vulcano.services.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -23,6 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Autenticación", description = "Endpoints para el manejo de autenticación y autorización de usuarios")
 public class AuthController {
 
     private final JugadorService jugadorService;
@@ -30,10 +36,14 @@ public class AuthController {
     private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    /**
-     * Registro de nuevo jugador.
-     * Si falla (usuario duplicado, etc.), el GlobalExceptionHandler responderá automáticamente.
-     */
+    @Operation(
+        summary = "Registrar nuevo jugador",
+        description = "Crea una cuenta nueva de jugador con rol USER por defecto. Requiere correo único."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Jugador registrado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de registro inválidos o correo duplicado", content = @Content)
+    })
     @PostMapping("/register")
     @NullMarked
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -45,9 +55,14 @@ public class AuthController {
         ));
     }
 
-    /**
-     * Login para obtener el token JWT (validez 1 hora).
-     */
+    @Operation(
+        summary = "Iniciar sesión",
+        description = "Autentica al usuario y devuelve un access token JWT (válido 1 hora) y un refresh token"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Autenticación exitosa, retorna tokens"),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas", content = @Content)
+    })
     @PostMapping("/login")
     @NullMarked
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -74,6 +89,14 @@ public class AuthController {
         ));
     }
 
+    @Operation(
+        summary = "Refrescar token de acceso",
+        description = "Genera un nuevo access token usando un refresh token válido"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Token renovado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Refresh token no encontrado o expirado", content = @Content)
+    })
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
         String requestRefreshToken = request.get("refresh_token");
