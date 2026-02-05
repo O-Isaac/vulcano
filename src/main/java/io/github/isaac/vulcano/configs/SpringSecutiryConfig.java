@@ -49,7 +49,13 @@ public class SpringSecutiryConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Permitimos auth
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api-docs/**",
+                                "/scalar/**",
+                                "/swagger-ui/**",
+                                "/swagger"
+                        ).permitAll() // Permitimos sin auth
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
