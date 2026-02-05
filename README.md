@@ -5,6 +5,9 @@
 ![Maven](https://img.shields.io/badge/Maven-3.x-C71A36?style=flat-square&logo=apache-maven)
 ![MariaDB](https://img.shields.io/badge/MariaDB-10.x-003545?style=flat-square&logo=mariadb)
 ![JWT](https://img.shields.io/badge/JWT-Auth-blue?style=flat-square&logo=jwt)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6.x-6DB33F?style=flat-square&logo=spring-security)
+![Scalar](https://img.shields.io/badge/Scalar-API%20Docs-2d333b?style=flat-square)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=flat-square&logo=swagger)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square)
 
@@ -16,38 +19,69 @@ Proporciona APIs CRUD básicas para entidades relacionadas con la fundición: ju
 
 - **[vulcano-admin](https://github.com/O-Isaac/vulcano-admin)** - Panel de administración para gestionar el sistema Vulcano
 
+## Documentación de API
+
+La documentación interactiva de la API está disponible en:
+
+- **[Scalar](http://localhost:8080/scalar/index.html)** - Documentación moderna y visual de OpenAPI
+- **[Swagger UI](http://localhost:8080/swagger-ui.html)** - Interfaz estándar de Swagger
+
+Ambas herramientas permiten explorar, probar y entender los endpoints disponibles de forma interactiva.
+
 ## Descripción
 
-Este repositorio contiene la base de un backend en Java (Spring Boot) que modela la lógica de fundición. Los controladores actuales son boilerplate y responden con mensajes simples en cada endpoint; están pensados para ser rellenados con la lógica real y acceso a la base de datos a través de los repositorios existentes.
+Vulcano es un backend completo desarrollado con **Spring Boot 4.0.1** que implementa un sistema robusto de fundición y fabricación de materiales asíncrono. El proyecto incluye:
+
+- **Sistema de autenticación y autorización** basado en JWT con roles (ADMIN, USER)
+- **APIs CRUD completas** para todas las entidades del juego
+- **Servicios de negocio** con lógica de validación, gestión de recursos y cola de construcción
+- **DTOs y mappers** para la transformación de datos entre capas
+- **Manejo de errores** centralizado con excepciones personalizadas
+- **Documentación interactiva** de API con Scalar y Swagger UI
+- **Validaciones** usando Jakarta Validation
+- **Transaccionalidad** en todas las operaciones críticas
 
 ## Tecnologías
 
-- Java 25
-- Spring Boot 4.0.1
-- MariaDB (Base de datos relacional)
-- Maven (se incluye `mvnw` para ejecutar sin depender de una instalación global de Maven)
-- Jakarta Persistence (JPA)
-- Lombok (para getters/setters)
-- Spring Security OAuth2 con JWT
+- **Java 25** - Lenguaje de programación
+- **Spring Boot 4.0.1** - Framework web
+- **Spring Security 7.0.2** - Seguridad y autenticación
+- **MariaDB** - Base de datos relacional
+- **Maven** - Gestor de dependencias (incluye `mvnw`)
+- **Jakarta Persistence (JPA)** - ORM
+- **Lombok** - Reducción de boilerplate (getters/setters/constructores)
+- **MapStruct** - Mapeo de DTOs a entidades
+- **Spring OAuth2 JWT** - Autenticación con JSON Web Tokens
+- **SpringDoc OpenAPI** - Documentación de API
+- **Scalar & Swagger UI** - Interfaces interactivas para explorar la API
+- **Spring Validation** - Validación de datos con anotaciones
+- **Spring Actuator** - Health checks y métricas
 
 ## Seguridad y Autenticación
 
 Este proyecto implementa **autenticación y autorización basada en JWT (JSON Web Tokens)**:
 
-- **Algoritmo de firma**: HS256
-- **Encriptación de contraseñas**: BCrypt
-- **Control de acceso**: STATELESS (sin sesiones)
-- **Autorización**: Basada en roles con Spring Security
+- **Algoritmo de firma**: HS256 (HMAC con SHA-256)
+- **Encriptación de contraseñas**: BCrypt con salt
+- **Política de sesión**: STATELESS (sin sesiones HTTP)
+- **Autorización**: Basada en roles con Spring Security (`@PreAuthorize`)
+- **Proveedores de autenticación**: DaoAuthenticationProvider
 
-### Endpoints Públicos
-- `/auth/login` - Iniciar sesión
-- `/auth/register` - Registrar nuevo usuario
+### Endpoints Públicos (sin autenticación)
+- `POST /api/auth/login` - Iniciar sesión y obtener JWT
+- `POST /api/auth/register` - Registrar nuevo usuario
+- `POST /api/auth/refresh` - Refrescar token JWT
+- `/api-docs/**` - Documentación OpenAPI en JSON
+- `/scalar/**` - Interfaz Scalar para explorar la API
+- `/swagger-ui/**` - Interfaz Swagger para explorar la API
 
 ### Endpoints Protegidos
 Todos los demás endpoints requieren un token JWT válido en el header:
 ```
 Authorization: Bearer <token_jwt>
 ```
+
+El token se valida en cada solicitud usando el algoritmo HS256 y se extrae el usuario del claim `sub` (subject).
 
 ## Requisitos Previos
 
@@ -63,13 +97,76 @@ Necesitas tener una instancia de **MariaDB** ejecutándose. Por defecto, la apli
 
 La aplicación expone endpoints para gestionar los siguientes recursos del juego:
 
-- **Auth**: Autenticación de usuarios y refresco de tokens.
-- **Jugadores**: Gestión de perfiles de usuario.
-- **Recursos**: Materiales básicos del juego.
-- **Planos**: Esquemas para construir objetos.
-- **Componentes**: Partes necesarias para los planos.
-- **Inventario**: Gestión de los ítems que posee cada jugador.
-- **Queue**: Cola de construcción de la fundición.
+### 🔐 Auth (`/api/auth`)
+- **POST /login** - Autenticación de usuarios (genera JWT)
+- **POST /register** - Registro de nuevos jugadores
+- **POST /refresh** - Renovación de token JWT
+
+### 👥 Jugadores (`/api/jugadores`)
+- **GET** - Listar todos los jugadores
+- **GET /{id}** - Obtener jugador por ID
+- **POST** - Crear nuevo jugador
+- **PUT /{id}** - Actualizar perfil del jugador
+- **DELETE /{id}** - Eliminar jugador
+
+Atributos: id, nombre, correo, password (encriptada con BCrypt), role, nivel, créditos
+
+### 📦 Recursos (`/api/recursos`)
+- **GET** - Listar recursos (con paginación)
+- **GET /{id}** - Obtener recurso por ID
+- **POST** - Crear nuevo recurso
+- **PUT /{id}** - Actualizar recurso
+- **DELETE /{id}** - Eliminar recurso
+
+Atributos: id, nombre, descripción, rareza (COMUN, RARO, LEGENDARIO)
+
+### 📋 Planos (`/api/planos`)
+- **GET** - Listar todos los planos
+- **GET /{id}** - Obtener plano por ID
+- **POST** - Crear nuevo plano
+- **PUT /{id}** - Actualizar plano
+- **DELETE /{id}** - Eliminar plano
+
+Atributos: id, nombre, descripción, coste (en créditos), tiempoConstrucion (en milisegundos), recursoFabricado (referencia al recurso que produce)
+
+### ⚙️ Componentes (`/api/componentes`)
+- **GET** - Listar componentes
+- **GET /{id}** - Obtener componente por ID
+- **POST** - Crear componente
+- **PUT /{id}** - Actualizar componente
+- **DELETE /{id}** - Eliminar componente
+
+Atributos: id, cantidad, plano (referencia), recurso (referencia)
+*Los componentes define qué recursos necesita un plano para fabricarse*
+
+### 📦 Inventario (`/api/inventarios`)
+- **GET** - Listar inventarios
+- **GET /{jugadorId}/{recursoId}** - Obtener inventario de un jugador para un recurso
+- **POST** - Crear entrada de inventario
+- **PUT /{jugadorId}/{recursoId}** - Actualizar cantidad
+- **DELETE /{jugadorId}/{recursoId}** - Eliminar entrada
+
+Atributos: jugadorId, recursoId, cantidad
+*Clave compuesta: (jugadorId, recursoId)*
+
+Endpoints especiales (protegidos):
+- **GET /me** - Ver mi inventario (requiere autenticación)
+
+### ⏳ Queue / Colas de Construcción (`/api/queues`)
+- **GET** - Listar todas las construcciones (filtrable por estado)
+- **GET /{id}** - Obtener construcciones de un jugador
+- **POST** - Iniciar construcción de un plano
+
+Atributos: id, plano, jugador, estado (EN_CONSTRUCCION, FINALIZADO), inicioTime, finalTime
+
+Lógica de construcción:
+1. **Validación**: Verifica que el jugador tenga suficientes créditos y componentes
+2. **Deducción de recursos**: Se consumen los componentes del inventario
+3. **Deducción de créditos**: Se cobran los créditos según el coste del plano
+4. **Creación de entrada en queue**: Se registra el tiempo de inicio y fin
+5. **Finalización automática**: Cuando finalTime <= ahora, se completa y se entrega el recurso fabricado
+
+*Las tareas finalizadas se procesan automáticamente y entregan el recurso al inventario del jugador*
 
 ## Ejecutar localmente
 
@@ -92,113 +189,189 @@ La aplicación expone endpoints para gestionar los siguientes recursos del juego
 
 La API quedará disponible por defecto en `http://localhost:8080` (según configuración de Spring Boot).
 
-## Endpoints (boilerplate)
+## Testeo de API
 
-A continuación se listan los endpoints CRUD generados automáticamente. Actualmente devuelven mensajes de ejemplo; reemplaza las respuestas por la lógica real cuando implementes los servicios.
+Se incluye una colección de endpoints en **Bruno** (`Vulcano API Endpoints/`):
 
-Base path: `/api`
+- **Auth**: Login, Register, Refresh Token
+- **Jugadores**: CRUD de usuarios
+- **Recursos**: CRUD de recursos
+- **Planos**: CRUD de planos
+- **Componentes**: CRUD de componentes
+- **Inventario**: CRUD de inventarios + endpoints personales (`/me`)
+- **Queue**: Crear y listar construcciones
 
-- Jugadores
-  - GET  /api/jugadores -> Listar todos los jugadores
-  - GET  /api/jugadores/{id} -> Obtener jugador por id
-  - POST /api/jugadores -> Crear nuevo jugador (body: jugador)
-  - PUT  /api/jugadores/{id} -> Actualizar jugador por id (body: jugador)
-  - DELETE /api/jugadores/{id} -> Eliminar jugador por id
+Puedes importar la colección en Bruno o cualquier herramienta REST (Postman, Insomnia, etc.)
 
-- Recursos
-  - GET  /api/recursos -> Listar todos los recursos
-  - GET  /api/recursos/{id} -> Obtener recurso por id
-  - POST /api/recursos -> Crear nuevo recurso (body: recurso)
-  - PUT  /api/recursos/{id} -> Actualizar recurso por id (body: recurso)
-  - DELETE /api/recursos/{id} -> Eliminar recurso por id
+### Variables de entorno
+- **Host**: `http://localhost:8080`
+- **JWT Token**: Se obtiene automáticamente tras login y se usa en solicitudes subsecuentes
 
-- Objetos
-  - GET  /api/objetos -> Listar todos los objetos
-  - GET  /api/objetos/{id} -> Obtener objeto por id
-  - POST /api/objetos -> Crear nuevo objeto (body: objeto)
-  - PUT  /api/objetos/{id} -> Actualizar objeto por id (body: objeto)
-  - DELETE /api/objetos/{id} -> Eliminar objeto por id
+## Ejemplos de cuerpos de solicitud
 
-- Planos
-  - GET  /api/planos -> Listar todos los planos
-  - GET  /api/planos/{id} -> Obtener plano por id
-  - POST /api/planos -> Crear nuevo plano (body: plano)
-  - PUT  /api/planos/{id} -> Actualizar plano por id (body: plano)
-  - DELETE /api/planos/{id} -> Eliminar plano por id
-
-- Componentes
-  - GET  /api/componentes -> Listar todos los componentes
-  - GET  /api/componentes/{id} -> Obtener componente por id
-  - POST /api/componentes -> Crear nuevo componente (body: componente)
-  - PUT  /api/componentes/{id} -> Actualizar componente por id (body: componente)
-  - DELETE /api/componentes/{id} -> Eliminar componente por id
-
-- Queues (colas)
-  - GET  /api/queues -> Listar todas las colas
-  - GET  /api/queues/{id} -> Obtener queue por id
-  - POST /api/queues -> Crear nueva queue (body: queue)
-  - PUT  /api/queues/{id} -> Actualizar queue por id (body: queue)
-  - DELETE /api/queues/{id} -> Eliminar queue por id
-
-- Inventarios (clave compuesta: jugador + recurso)
-  - GET  /api/inventarios -> Listar todos los inventarios
-  - GET  /api/inventarios/{jugadorId}/{recursoId} -> Obtener inventario por jugador y recurso
-  - POST /api/inventarios -> Crear nuevo inventario (body: inventario)
-  - PUT  /api/inventarios/{jugadorId}/{recursoId} -> Actualizar inventario
-  - DELETE /api/inventarios/{jugadorId}/{recursoId} -> Eliminar inventario
-
-## Ejemplos de cuerpos (placeholders)
-
-- Crear Recurso (POST /api/recursos)
-
+### Crear Recurso
 ```json
+POST /api/recursos
+
 {
-  "id": 1,
   "nombre": "Ferrita",
-  "desc": "Material básico",
-  "rareza": "comun"
+  "desc": "Material básico para la fabricación",
+  "rareza": "COMUN"
 }
 ```
 
-- Crear Plano (POST /api/planos)
-
+### Crear Plano
 ```json
+POST /api/planos
+
 {
-  "id": 1,
-  "nombre": "Plano básico",
-  "desc": "Plano para fabricar X",
-  "coste": 100,
-  "tiempoConstrucion": 60,
-  "objeto": { "id": 1 }
+  "nombre": "Plano de Excalibur Prime",
+  "desc": "El plano maestro para ensamblar al legendario Excalibur Prime",
+  "coste": 250000,
+  "tiempoConstrucion": 30000,
+  "recursoFabricadoId": 1
 }
 ```
 
-- Crear Inventario (POST /api/inventarios)
-
+### Crear Componente
 ```json
+POST /api/componentes
+
 {
-  "id": { "jugadorId": 1, "recursoId": 1 },
-  "jugador": { "id": 1 },
-  "recurso": { "id": 1 },
-  "cantidad": 50
+  "cantidad": 5,
+  "planoId": 1,
+  "recursoId": 2
 }
 ```
 
-Nota: Los bodies son ejemplos; adapta los atributos según tus DTOs o entidades.
+### Crear Inventario
+```json
+POST /api/inventarios
+
+{
+  "jugadorId": 1,
+  "recursoId": 1,
+  "cantidad": 100
+}
+```
+
+### Iniciar Construcción
+```json
+POST /api/queues
+
+{
+  "planoId": 1
+}
+```
+*Requiere: Token JWT válido, créditos suficientes, componentes necesarios en inventario*
+
+### Registrarse
+```json
+POST /api/auth/register
+
+{
+  "nombre": "IsaacDev",
+  "correo": "isaac@example.com",
+  "password": "miPassword123"
+}
+```
+
+### Login
+```json
+POST /api/auth/login
+
+{
+  "correo": "isaac@example.com",
+  "password": "miPassword123"
+}
+```
+*Respuesta incluye un JWT token que debe usarse en solicitudes posteriores*
+
+## Características Especiales
+
+### Sistema de Construcción Asíncrono
+- Las construcciones se ejecutan de forma **no bloqueante**
+- Se almacena un timestamp de inicio y fin en la base de datos
+- Un **scheduler** verifica periódicamente qué construcciones han finalizado
+- Al finalizar, el recurso fabricado se **entrega automáticamente** al inventario del jugador
+
+### Validaciones de Negocio
+- **Verificación de duplicados**: No permite dos construcciones del mismo plano en paralelo
+- **Validación de recursos**: Verifica que el jugador tenga todos los componentes necesarios
+- **Validación de créditos**: Comprueba saldo antes de iniciar construcción
+- **Gestión transaccional**: Usa `@Transactional` para garantizar consistencia
+
+### Mapeo de Entidades
+- Usa **MapStruct** para conversión automática DTO <-> Entity
+- Evita exponer entidades completas en respuestas API
+- DTOs separadas para creación y actualización con validaciones específicas
+
+### Manejo de Errores
+- Excepciones personalizadas (`BadRequestException`, `EntityNotFoundException`)
+- **ControllerAdvice** centralizado para respuestas consistentes
+- Mensajes de error descriptivos para depuración
+
+```
+src/main/java/io/github/isaac/vulcano/
+├── VulcanoApplication.java          # Punto de entrada
+├── configs/                         # Configuraciones (Spring Security, CORS, JWT)
+├── controllers/                     # Controladores REST
+├── services/                        # Lógica de negocio
+├── repositories/                    # Acceso a datos (JPA)
+├── entities/                        # Modelos de base de datos
+├── dtos/                           # Objetos de transferencia de datos
+├── mappers/                        # Conversión DTO <-> Entity (MapStruct)
+├── exceptions/                     # Excepciones personalizadas
+└── schedulers/                     # Tareas programadas (finalizacion de colas)
+```
+
+## Estado del Desarrollo
+
+✅ **Completado:**
+- Modelo de datos completo con todas las entidades
+- Sistema de autenticación y autorización con JWT
+- Servicios CRUD para todas las entidades
+- Lógica de negocio para la cola de construcción (validación, deducción de recursos, cálculo de tiempos)
+- DTOs y validaciones
+- Documentación interactiva (Scalar y Swagger)
+- CORS configurado para desarrollo
+- Manejo centralizado de errores
+
+🔧 **En desarrollo o pendiente:**
+- Tests unitarios e integración
+- Optimizaciones de consultas a base de datos
+- Métricas y monitoreo avanzado
+- Paginación en todos los endpoints
 
 ## Siguientes pasos sugeridos
 
-- Implementar servicios (service layer) que usen los repositorios existentes para la lógica CRUD real.
-- Crear DTOs y validaciones (ej. con javax.validation) para las solicitudes entrantes.
-- Añadir manejo de errores (ControllerAdvice) y respuestas consistentes.
-- Añadir pruebas unitarias y de integración para los controladores y servicios.
+- Ejecutar tests (actualmente disponibles en `src/test`)
+- Implementar paginación en listados grandes
+- Añadir más validaciones de negocio según requisitos
+- Integrar con vulcano-admin para gestión centralizada
+- Documentar API responses estándar
+
+## Contribución
+
+Las contribuciones son bienvenidas. Para cambios importantes:
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Realiza tus cambios y commits
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
+
+## Contacto e Información
+
+- **Autor**: Isaac
+- **Repositorio Principal**: https://github.com/O-Isaac/vulcano
+- **Panel Admin**: https://github.com/O-Isaac/vulcano-admin
+- **Documentación API**: Disponible en `http://localhost:8080/scalar` (Scalar) o `http://localhost:8080/swagger-ui.html` (Swagger)
 
 ---
 
-Si quieres, puedo:
-
-- Generar los servicios CRUD usando los repositorios existentes.
-- Implementar la lógica básica en los controladores (inyección de servicios y mapeo DTO <-> entidad).
-- Añadir ejemplos de tests y/o Postman collection.
-
-Dime qué prefieres que implemente a continuación.
+**Última actualización**: Febrero 2026  
+**Versión**: 0.0.1-SNAPSHOT
