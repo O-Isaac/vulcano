@@ -39,6 +39,10 @@ public class Jugador implements UserDetails {
     @Column(name = "role", length = 100)
     private String role;
 
+    @Column(name ="creditos")
+    @ColumnDefault("0")
+    private long creditos;
+
     // Implementacion de autentificacion por security spring metodos necesarios
     // Por defecto sonb true los isAccount y demas
 

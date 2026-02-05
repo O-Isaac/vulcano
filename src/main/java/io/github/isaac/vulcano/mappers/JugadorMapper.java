@@ -1,6 +1,7 @@
 package io.github.isaac.vulcano.mappers;
 
 import io.github.isaac.vulcano.dtos.auth.RegisterRequest;
+import io.github.isaac.vulcano.dtos.jugador.JugadorResponse;
 import io.github.isaac.vulcano.entities.Jugador;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public abstract class JugadorMapper {
     @Mapping(target = "nivel", constant = "1")
     @Mapping(target = "role", constant = "USER")
     public abstract Jugador toEntity(RegisterRequest request);
+    public abstract JugadorResponse toResponse(Jugador jugador);
 
     @Named("encodePassword")
     protected String encodePassword(String rawPassword) {
