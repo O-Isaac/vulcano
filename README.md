@@ -1,13 +1,20 @@
 # Proyecto Vulcano F
 
-![Java](https://img.shields.io/badge/Java-17%2B-orange?style=flat-square&logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green?style=flat-square&logo=spring-boot)
+![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-green?style=flat-square&logo=spring-boot)
 ![Maven](https://img.shields.io/badge/Maven-3.x-C71A36?style=flat-square&logo=apache-maven)
+![MariaDB](https://img.shields.io/badge/MariaDB-10.x-003545?style=flat-square&logo=mariadb)
 ![JWT](https://img.shields.io/badge/JWT-Auth-blue?style=flat-square&logo=jwt)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat-square)
 
-Proyecto Vulcano F es un servicio REST construido con Spring Boot que recrea el sistema de fundición del popular juego free-to-play Warframe. Proporciona APIs CRUD básicas para entidades relacionadas con la fundición: jugadores, recursos, objetos, planos, componentes, colas e inventarios.
+Proyecto Vulcano F es un servicio REST construido con Spring Boot que implementa un sistema de fundición y fabricación de materiales asíncrono, inspirado en mecánicas comunes en diversos videojuegos de gestión y RPG. Este sistema permite a los jugadores recolectar recursos, adquirir planos y "craftear" objetos en tiempo real (que requieren un tiempo de espera para completarse).
+
+Proporciona APIs CRUD básicas para entidades relacionadas con la fundición: jugadores, recursos, objetos, planos, componentes, colas e inventarios.
+
+## Repositorios relacionados
+
+- **[vulcano-admin](https://github.com/O-Isaac/vulcano-admin)** - Panel de administración para gestionar el sistema Vulcano
 
 ## Descripción
 
@@ -15,8 +22,9 @@ Este repositorio contiene la base de un backend en Java (Spring Boot) que modela
 
 ## Tecnologías
 
-- Java 17+ (según configuración del proyecto)
-- Spring Boot
+- Java 25
+- Spring Boot 4.0.1
+- MariaDB (Base de datos relacional)
 - Maven (se incluye `mvnw` para ejecutar sin depender de una instalación global de Maven)
 - Jakarta Persistence (JPA)
 - Lombok (para getters/setters)
@@ -41,15 +49,42 @@ Todos los demás endpoints requieren un token JWT válido en el header:
 Authorization: Bearer <token_jwt>
 ```
 
+## Requisitos Previos
+
+Necesitas tener una instancia de **MariaDB** ejecutándose. Por defecto, la aplicación espera la siguiente configuración (puedes cambiarla en `src/main/resources/application.properties`):
+
+- **Host**: `localhost`
+- **Puerto**: `3307`
+- **Base de datos**: `fundicion`
+- **Usuario**: `root`
+- **Contraseña**: *(vacía)*
+
+## Módulos de la API
+
+La aplicación expone endpoints para gestionar los siguientes recursos del juego:
+
+- **Auth**: Autenticación de usuarios y refresco de tokens.
+- **Jugadores**: Gestión de perfiles de usuario.
+- **Recursos**: Materiales básicos del juego.
+- **Planos**: Esquemas para construir objetos.
+- **Componentes**: Partes necesarias para los planos.
+- **Inventario**: Gestión de los ítems que posee cada jugador.
+- **Queue**: Cola de construcción de la fundición.
+
 ## Ejecutar localmente
 
-Compilar y empaquetar:
+1. Asegúrate de tener la base de datos creada:
+   ```sql
+   CREATE DATABASE fundicion;
+   ```
+
+2. Compilar y empaquetar:
 
 ```bash
 ./mvnw -DskipTests package
 ```
 
-Ejecutar la aplicación:
+3. Ejecutar la aplicación:
 
 ```bash
 ./mvnw spring-boot:run
