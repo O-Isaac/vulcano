@@ -18,8 +18,7 @@
 
   // Al abrir el Codespace, VS Code ejecutará esta tarea automáticamente
   "postAttachCommand": {
-    "label": "Iniciar Spring Boot",
-    "task": "run-spring-boot"
+    "dev": "mvn spring-boot:run"
   },
 
   "forwardPorts": [8080],
