@@ -24,9 +24,9 @@ public record RecursoCreateRequest(
         @NotEmpty(message = "La descripción no puede estar vacia")
         String desc,
 
-        @Schema(description = "Rareza del recurso", example = "COMUN", allowableValues = {"COMUN", "RARO", "LEGENDARIO"}, requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "Rareza del recurso", example = "COMUN", allowableValues = {"COMUN", "RARO", "EPICO", "LEGENDARIO"}, requiredMode = Schema.RequiredMode.REQUIRED)
         @NotNull(message = "La rareza es obligatoria")
-        @Pattern(message = "No cumple con el patron requerido", regexp = "(COMUN|RARO|LEGENDARIO)")
+        @Pattern(message = "No cumple con el patron requerido", regexp = "(COMUN|RARO|EPICO|LEGENDARIO)")
         @NotEmpty
         String rareza
 ) implements Serializable {
