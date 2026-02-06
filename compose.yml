@@ -1,0 +1,19 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb_fundicion
+    restart: always
+    environment:
+      # Sets the root password
+      MARIADB_ROOT_PASSWORD: "1234"
+      # Creates the database on startup
+      MARIADB_DATABASE: "fundicion"
+    ports:
+      # Map host port 3307 to container port 3306
+      - "3307:3306"
+    volumes:
+      # Persist data so it isn't lost when the container stops
+      - mariadb_data:/var/lib/mysql
+
+volumes:
+  mariadb_data:

@@ -1,0 +1,43 @@
+{
+  "name": "Spring Boot & Java 25",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    // Instalamos Java. Solicitamos la versión 25.
+    // Nota: Si la 25 no está disponible en los repositorios estándar, 
+    // SDKMAN intentará buscarla o fallará. Puedes cambiar "25" por "latest" o "25-ea".
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "25",
+      "jdkDistro": "open",
+      "gradle": "latest",
+      "maven": "latest"
+    },
+    // Instalamos Docker para poder ejecutar 'docker compose' dentro del contenedor
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": "true"
+    }
+  },
+  
+  // Configuraciones de VS Code (opcional pero recomendado para Java)
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-spring-boot",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+
+  // Comando que se ejecuta cada vez que el contenedor inicia exitosamente.
+  // 1. Levanta los servicios del docker-compose.yml en la raíz.
+  // 2. Inicia la aplicación Spring Boot (asumiendo Maven).
+  "postStartCommand": "docker compose up -d && ./mvnw spring-boot:run",
+
+  // Permite al contenedor acceder a los puertos reenviados
+  "forwardPorts": [8080],
+
+  // Usuario remoto (usualmente 'vscode' en imágenes de Microsoft)
+  "remoteUser": "vscode"
+}
