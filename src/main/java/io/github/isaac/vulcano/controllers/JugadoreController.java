@@ -55,9 +55,9 @@ public class JugadoreController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<JugadorResponse> addCreditos(
             @Parameter(description = "Cantidad de créditos a añadir", required = true)
-            @PathVariable long cantidad,
+            @PathVariable Long cantidad,
             @Parameter(description = "ID del jugador", required = true)
-            @PathVariable int jugadorId
+            @PathVariable Integer jugadorId
     ) {
         return ResponseEntity.ok(
                 jugadorService.addCreditos(jugadorId, cantidad)
