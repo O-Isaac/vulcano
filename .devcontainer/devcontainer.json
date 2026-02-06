@@ -18,7 +18,7 @@
 
   // Al abrir el Codespace, VS Code ejecutará esta tarea automáticamente
   "postAttachCommand": {
-    "dev": "mvn spring-boot:run"
+    "dev": "./mvnw spring-boot:run"
   },
 
   "forwardPorts": [8080],
